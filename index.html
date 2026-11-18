@@ -129,6 +129,8 @@ footer{text-align:center;color:var(--mute);font-size:13px;margin-top:40px}
 .play{opacity:1;transform:scale(1);top:42%;z-index:1}
 .card:hover .play,.card:focus-visible .play{transform:scale(1.12)}
 .fr.post{aspect-ratio:auto;width:min(520px,100%);height:min(82vh,720px);margin:0 auto;background:#fff}
+.poster>img.th{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.card:hover .poster>img.th{transform:scale(1.06)}
 </style>
 </head>
 <body>
@@ -212,9 +214,10 @@ const LINKS={instagram:"",linkedin:""};
 const $=i=>document.getElementById(i);
 const SRC=w=>w.type==='yt'?`https://www.youtube.com/embed/${w.id}?autoplay=1&rel=0&playsinline=1`:w.type==='ig'?`https://www.instagram.com/reel/${w.id}/embed`:`https://www.linkedin.com/embed/feed/update/urn:li:activity:${w.id}`;
 const BADGE={yt:'YouTube',ig:'Instagram',li:'LinkedIn'};
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const live=WORKS.filter(w=>w.id);
 $('segs').innerHTML=SEGS.map(s=>{const it=live.map((w,i)=>({w,i})).filter(x=>x.w.seg===s.id);if(!it.length)return'';
- return `<div class="seg rv" style="--h:${s.h}"><div class="head"><div><h3>${s.name}</h3><p>${s.desc}</p></div><div class="arrows"><button data-d="-1" aria-label="Previous">&larr;</button><button data-d="1" aria-label="Next">&rarr;</button></div></div><div class="reel glass"><div class="strip">${it.map(({w,i})=>`<button class="card" data-i="${i}"><div class="poster"><span class="badge">${BADGE[w.type]}</span><span class="play"></span><div class="pt"><b>${w.title}</b><div class="tg">${w.tags.map(t=>`<i>${t}</i>`).join('')}</div></div></div></button>`).join('')}</div></div></div>`}).join('');
+ return `<div class="seg rv" style="--h:${s.h}"><div class="head"><div><h3>${s.name}</h3><p>${s.desc}</p></div><div class="arrows"><button data-d="-1" aria-label="Previous">&larr;</button><button data-d="1" aria-label="Next">&rarr;</button></div></div><div class="reel glass"><div class="strip">${it.map(({w,i})=>`<button class="card" data-i="${i}"><div class="poster"><img class="th" src="thumbs/${slug(w.title)}.jpg" alt="" loading="lazy" onerror="if(this.dataset.f){this.remove()}else{this.dataset.f=1;this.src='${slug(w.title)}.jpg'}"><span class="badge">${BADGE[w.type]}</span><span class="play"></span><div class="pt"><b>${w.title}</b><div class="tg">${w.tags.map(t=>`<i>${t}</i>`).join('')}</div></div></div></button>`).join('')}</div></div></div>`}).join('');
 let down=null,sx=0,sl=0,moved=false;
 $('segs').addEventListener('pointerdown',e=>{const s=e.target.closest('.strip');if(!s||e.pointerType!=='mouse')return;down=s;moved=false;sx=e.clientX;sl=s.scrollLeft});
 addEventListener('pointermove',e=>{if(!down)return;const d=e.clientX-sx;if(Math.abs(d)>5)moved=true;down.scrollLeft=sl-d});
